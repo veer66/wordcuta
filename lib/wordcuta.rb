@@ -6,9 +6,11 @@ module WordcutFFI
     layout :s, :size_t,
            :e, :size_t
   end
-  
+
   extend FFI::Library
+
   ffi_lib "wordcutw"
+  
   attach_function :wordcut_new_with_dict, [:string], :pointer
   attach_function :wordcut_into_text_ranges, [:pointer, :string, :pointer], :pointer
   attach_function :wordcut_into_strings, [:pointer, :string, :pointer], :pointer
@@ -20,6 +22,8 @@ end
 module WordcutA
   TextRange = Struct.new(:s, :e)
 
+  DEFAULT_THAI_DICT_PATH = File.expand_path('../../data/thai-dix.txt', __FILE__)
+  
   class Wordcut
     def initialize(dict_path)
       @wordcut_p = FFI::AutoPointer.new(WordcutFFI.wordcut_new_with_dict(dict_path),
@@ -46,11 +50,11 @@ module WordcutA
         words = words_p.get_array_of_string(0, words_cnt)
         WordcutFFI::delete_strings(words_p, words_cnt)
       end
-      return words
+      return words.map {_1.force_encoding("UTF-8")}
     end
 
     def put_delimiters(text, delim)
-      WordcutFFI::wordcut_put_delimiters(@wordcut_p, text, delim)
+      WordcutFFI::wordcut_put_delimiters(@wordcut_p, text, delim).force_encoding("UTF-8")
     end
   end
 end

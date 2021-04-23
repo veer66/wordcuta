@@ -1,4 +1,5 @@
 source :rubygems
 
 gemspec
-gem :ffi
+
+gem 'ffi'
