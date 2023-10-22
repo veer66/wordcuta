@@ -1,3 +1,5 @@
+# Moved to https://codeberg.org/mekong-lang/wordcuta
+
 # WordcutA
 
 ## Install
